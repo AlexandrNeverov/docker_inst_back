@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Exit on error
+set -e
+
+# -------------------------------
+# STEP 1: Download and install Vault
+# -------------------------------
+
+cd /home/ubuntu/projects/terraform 
+git clone https://github.com/AlexandrNeverov/terraform_docker_setup.git
+cd /home/ubuntu/projects/ansible
+git clone https://github.com/AlexandrNeverov/ansible_docker_setup.git
+
+
+#!/bin/bash
+
+# Путь к исходным файлам
+BACKEND_FILE="/home/ubuntu/projects/terraform/terraform_docker_setup/backend.tf"
+BUCKET_FILE="/home/ubuntu/projects/s3_bucket.txt"
+
+# Проверка: файл бакета существует
+if [ ! -f "$BUCKET_FILE" ]; then
+  echo "❌ Файл s3_bucket.txt не найден: $BUCKET_FILE"
+  exit 1
+fi
+
+# Считываем имя бакета
+BUCKET_NAME=$(cat "$BUCKET_FILE" | tr -d ' \t\n')
+
+if [ -z "$BUCKET_NAME" ]; then
+  echo "❌ Имя бакета пустое в файле $BUCKET_FILE"
+  exit 1
+fi
+
+# Делаем резервную копию backend.tf
+cp "$BACKEND_FILE" "${BACKEND_FILE}.bak"
+
+# Меняем строку с bucket
+sed -i "s/^ *bucket *= *.*/  bucket = \"$BUCKET_NAME\"/" "$BACKEND_FILE"
+
+echo "✅ Строка bucket обновлена на \"$BUCKET_NAME\" в файле $BACKEND_FILE"
+
+terraform init
+
+terraform plan -out=tfplan
+
+terraform apply -auto-approve tfplan
+
+cd /home/ubuntu/projects/ansible
+git clone https://github.com/AlexandrNeverov/ansible_docker_setup.git
