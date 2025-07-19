@@ -13,4 +13,4 @@ curl -fsSL https://raw.githubusercontent.com/AlexandrNeverov/zero-node-stack-ful
 echo "🐳 Step 4: Installing Docker provisioning script..."
 curl -fsSL https://raw.githubusercontent.com/AlexandrNeverov/DevOps-Showcase-Automated-Docker-Infrastructure-with-Terraform-and-Ansible-AWS-EC2-/refs/heads/main/boot/docker.sh | bash -
 
-echo "✅ All setup scripts executed successfully!"
+echo "✅ All setup scripts executed successfully! Use 'ssh -i /home/ubuntu/.ssh/zero-node-key ubuntu@<public-ip> to connect'"
